@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Controller - Beach Buggy Racing</title>
+    <link rel="stylesheet" href="css/mobile.css">
+    
+    <!-- Socket.IO Client Library -->
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+</head>
+<body class="controller-page">
+    
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="screen active">
+        <div class="welcome-container-mobile">
+            <div class="mobile-logo">
+                <h1>🎮</h1>
+                <h2>Beach Buggy Racing</h2>
+                <p class="mobile-subtitle">Controller</p>
+            </div>
+
+            <div class="mobile-instructions">
+                <p>Transform your phone into a game controller!</p>
+            </div>
+
+            <button id="connectBtn" class="btn-mobile-primary">
+                Connect to Game
+            </button>
+
+            <div class="mobile-footer">
+                <p>Make sure your phone and desktop are on the same network</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Entry Screen -->
+    <div id="codeEntryScreen" class="screen">
+        <div class="code-entry-container">
+            <button class="back-button" id="backToWelcome">← Back</button>
+            
+            <h2>Enter Room Code</h2>
+            <p class="entry-instruction">Enter the 6-digit code shown on the desktop screen</p>
+
+            <!-- 6-Digit Code Input -->
+            <div class="code-input-container">
+                <input type="tel" maxlength="1" class="code-digit" id="digit1" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="code-digit" id="digit2" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="code-digit" id="digit3" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="code-digit" id="digit4" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="code-digit" id="digit5" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="code-digit" id="digit6" pattern="[0-9]" inputmode="numeric">
+            </div>
+
+            <div id="codeError" class="error-message" style="display: none;">
+                Invalid code. Please try again.
+            </div>
+
+            <!-- Player Name Input -->
+            <div class="name-input-container">
+                <label for="playerName">Your Name (optional)</label>
+                <input type="text" id="playerName" class="player-name-input" placeholder="Player" maxlength="15">
+            </div>
+
+            <button id="joinGameBtn" class="btn-mobile-primary" disabled>
+                Join Game
+            </button>
+
+            <div class="quick-join-info">
+                <p>Or scan the QR code on desktop to join instantly</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lobby/Waiting Screen -->
+    <div id="lobbyScreen" class="screen">
+        <div class="lobby-container-mobile">
+            <div class="lobby-header-mobile">
+                <div class="connection-status">
+                    <span class="status-indicator connected"></span>
+                    <span>Connected</span>
+                </div>
+                <button id="disconnectBtn" class="disconnect-btn">Disconnect</button>
+            </div>
+
+            <div class="player-info-card">
+                <h3>You are:</h3>
+                <div class="player-badge">
+                    <div id="playerNumberDisplay" class="player-number-large">1</div>
+                    <div id="playerNameDisplay" class="player-name-large">Player 1</div>
+                    <div id="playerRoleDisplay" class="player-role">👑 Host</div>
+                </div>
+            </div>
+
+            <!-- Host Controls (only visible to Player 1) -->
+            <div id="hostControls" class="host-controls-mobile" style="display: none;">
+                <h4>Select Track</h4>
+                <div class="map-selector-mobile">
+                    <button class="map-option" data-map="beach">🏖️ Beach</button>
+                    <button class="map-option" data-map="desert">🏜️ Desert</button>
+                    <button class="map-option" data-map="jungle">🌴 Jungle</button>
+                    <button class="map-option" data-map="arctic">❄️ Arctic</button>
+                    <button class="map-option" data-map="city">🏙️ City</button>
+                </div>
+
+                <h4>Game Mode</h4>
+                <div class="mode-selector-mobile">
+                    <button class="mode-option" data-mode="race">🏁 Race</button>
+                    <button class="mode-option" data-mode="timeTrial">⏱️ Time Trial</button>
+                    <button class="mode-option" data-mode="elimination">💥 Elimination</button>
+                    <button class="mode-option" data-mode="battle">⚔️ Battle</button>
+                </div>
+            </div>
+
+            <div class="waiting-info">
+                <p>⏳ Waiting for game to start...</p>
+                <p class="small-text-mobile" id="connectedPlayersInfo">Players connected: 1/4</p>
+            </div>
+
+            <div class="controller-preview">
+                <p class="preview-label">Controller Preview:</p>
+                <div class="preview-controls">
+                    <div class="preview-item">← Left Arrow</div>
+                    <div class="preview-item">→ Right Arrow</div>
+                    <div class="preview-item">🔴 Brake/Drift</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Controller Screen -->
+    <div id="controllerScreen" class="screen">
+        <div class="controller-container">
+            <!-- Top Status Bar -->
+            <div class="controller-status-bar">
+                <div class="status-item">
+                    <span class="status-label">Player:</span>
+                    <span id="gamePlayerNumber">1</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Position:</span>
+                    <span id="racePosition">1st</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Lap:</span>
+                    <span id="currentLap">1/3</span>
+                </div>
+            </div>
+
+            <!-- Main Controller Area -->
+            <div class="controller-main">
+                <!-- Left Side: Steering Controls -->
+                <div class="steering-area">
+                    <button id="steerLeft" class="control-btn steering-btn left-btn" aria-label="Steer Left">
+                        <span class="btn-icon">◀</span>
+                        <span class="btn-label">LEFT</span>
+                    </button>
+                    
+                    <button id="steerRight" class="control-btn steering-btn right-btn" aria-label="Steer Right">
+                        <span class="btn-icon">▶</span>
+                        <span class="btn-label">RIGHT</span>
+                    </button>
+                </div>
+
+                <!-- Right Side: Brake/Drift Button -->
+                <div class="action-area">
+                    <button id="brakeBtn" class="control-btn brake-btn" aria-label="Brake/Drift">
+                        <span class="btn-icon">🔴</span>
+                        <span class="btn-label">BRAKE<br>DRIFT</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Throttle Info (Auto) -->
+            <div class="throttle-info">
+                <span class="throttle-icon">⚡</span>
+                <span>Throttle: Automatic</span>
+            </div>
+
+            <!-- Exit Button -->
+            <button id="exitGameBtn" class="exit-game-btn">Exit Game</button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="mobileLoading" class="mobile-loading" style="display: none;">
+        <div class="loading-spinner-mobile"></div>
+        <p>Connecting...</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/controller/controller.js"></script>
+</body>
+</html>
