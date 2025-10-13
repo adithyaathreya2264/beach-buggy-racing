@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Lobby - Beach Buggy Racing</title>
+    <link rel="stylesheet" href="css/desktop.css">
+    
+    <!-- Socket.IO Client Library -->
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="game-page">
+    <div class="game-container">
+        <!-- Header -->
+        <div class="game-header">
+            <h1>🏎️ Beach Buggy Racing</h1>
+            <div id="roomStatus" class="room-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Connecting...</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="game-content">
+            <!-- Left Panel: QR Code & Join Instructions -->
+            <div class="left-panel">
+                <div class="qr-section">
+                    <h2>Join Game</h2>
+                    <p class="join-instruction">Scan QR code with your phone camera</p>
+                    
+                    <!-- QR Code Container -->
+                    <div id="qrCodeContainer" class="qr-code-container">
+                        <div id="qrcode"></div>
+                    </div>
+
+                    <!-- Room Code Display -->
+                    <div class="room-code-section">
+                        <p class="or-text">OR enter code manually:</p>
+                        <div id="roomCodeDisplay" class="room-code">
+                            <span id="roomCode">------</span>
+                        </div>
+                        <p class="code-instruction">Go to: <span id="controllerUrl" class="controller-url">Loading...</span></p>
+                    </div>
+
+                    <!-- Connection Info -->
+                    <div class="connection-info">
+                        <p>✓ Desktop connected</p>
+                        <p id="playerCount">👥 Waiting for players... (0/4)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Player Lobby -->
+            <div class="right-panel">
+                <div class="lobby-section">
+                    <h2>Players</h2>
+                    
+                    <!-- Player Slots -->
+                    <div id="playerSlots" class="player-slots">
+                        <!-- Player 1 -->
+                        <div class="player-slot empty" data-player="1">
+                            <div class="player-number">1</div>
+                            <div class="player-info">
+                                <div class="player-name">Waiting...</div>
+                                <div class="player-status">Empty slot</div>
+                            </div>
+                            <div class="player-indicator"></div>
+                        </div>
+
+                        <!-- Player 2 -->
+                        <div class="player-slot empty" data-player="2">
+                            <div class="player-number">2</div>
+                            <div class="player-info">
+                                <div class="player-name">Waiting...</div>
+                                <div class="player-status">Empty slot</div>
+                            </div>
+                            <div class="player-indicator"></div>
+                        </div>
+
+                        <!-- Player 3 -->
+                        <div class="player-slot empty" data-player="3">
+                            <div class="player-number">3</div>
+                            <div class="player-info">
+                                <div class="player-name">Waiting...</div>
+                                <div class="player-status">Empty slot</div>
+                            </div>
+                            <div class="player-indicator"></div>
+                        </div>
+
+                        <!-- Player 4 -->
+                        <div class="player-slot empty" data-player="4">
+                            <div class="player-number">4</div>
+                            <div class="player-info">
+                                <div class="player-name">Waiting...</div>
+                                <div class="player-status">Empty slot</div>
+                            </div>
+                            <div class="player-indicator"></div>
+                        </div>
+                    </div>
+
+                    <!-- Game Controls (visible to Player 1 when ready) -->
+                    <div id="gameControls" class="game-controls" style="display: none;">
+                        <h3>Game Setup</h3>
+                        
+                        <!-- Map Selection (visible to Player 1 only) -->
+                        <div id="mapSelection" class="selection-section">
+                            <label>Select Track:</label>
+                            <select id="mapSelect" class="custom-select">
+                                <option value="beach">🏖️ Beach Paradise</option>
+                                <option value="desert">🏜️ Desert Storm</option>
+                                <option value="jungle">🌴 Jungle Rush</option>
+                                <option value="arctic">❄️ Arctic Blast</option>
+                                <option value="city">🏙️ City Circuit</option>
+                            </select>
+                        </div>
+
+                        <!-- Game Mode Selection -->
+                        <div id="gameModeSelection" class="selection-section">
+                            <label>Game Mode:</label>
+                            <select id="gameModeSelect" class="custom-select">
+                                <option value="race">🏁 Race (3 Laps)</option>
+                                <option value="timeTrial">⏱️ Time Trial</option>
+                                <option value="elimination">💥 Elimination</option>
+                                <option value="battle">⚔️ Battle Arena</option>
+                            </select>
+                        </div>
+
+                        <!-- Start Race Button -->
+                        <button id="startRaceBtn" class="btn-primary btn-large" disabled>
+                            Waiting for players...
+                        </button>
+                    </div>
+
+                    <!-- Minimum Players Notice -->
+                    <div id="minPlayersNotice" class="notice-box">
+                        <p>⚠️ Minimum 1 player required to start</p>
+                        <p class="small-text">Game is more fun with 2+ players!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <button id="backBtn" class="btn-secondary back-btn">
+            ← Back to Menu
+        </button>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Preparing race...</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/shared/constants.js"></script>
+    <script src="js/shared/connection.js"></script>
+    
+    <script>
+        // Game lobby management
+        let socket = null;
+        let roomCode = null;
+        let isHost = false;
+        let connectedPlayers = [];
+
+        // Initialize connection when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeGameLobby();
+        });
+
+        function initializeGameLobby() {
+            // Connect to Socket.IO server
+            socket = io({
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000
+            });
+
+            // Connection successful
+            socket.on('connect', () => {
+                console.log('Connected to server');
+                updateRoomStatus('connected', 'Connected');
+                
+                // Create a new room
+                socket.emit('createRoom', (response) => {
+                    if (response.success) {
+                        roomCode = response.roomCode;
+                        isHost = true;
+                        
+                        console.log('Room created:', roomCode);
+                        
+                        // Display room code
+                        document.getElementById('roomCode').textContent = roomCode;
+                        document.getElementById('controllerUrl').textContent = 
+                            `${window.location.origin}/controller`;
+                        
+                        // Generate QR code
+                        generateQRCode(response.controllerUrl);
+                        
+                        // Show game controls for host
+                        document.getElementById('gameControls').style.display = 'block';
+                        
+                    } else {
+                        alert('Failed to create room: ' + response.error);
+                    }
+                });
+            });
+
+            // Connection error
+            socket.on('connect_error', (error) => {
+                console.error('Connection error:', error);
+                updateRoomStatus('error', 'Connection Error');
+            });
+
+            // Disconnected
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+                updateRoomStatus('disconnected', 'Disconnected');
+            });
+
+            // Player joined event
+            socket.on('playerJoined', (data) => {
+                console.log('Player joined:', data);
+                connectedPlayers = data.players;
+                updatePlayerLobby(data.players);
+                updatePlayerCount(data.totalPlayers);
+                
+                // Enable start button if at least 1 player
+                if (data.totalPlayers >= 1) {
+                    document.getElementById('startRaceBtn').disabled = false;
+                    document.getElementById('startRaceBtn').textContent = 'Start Race';
+                    document.getElementById('minPlayersNotice').style.display = 'none';
+                }
+            });
+
+            // Player left event
+            socket.on('playerLeft', (data) => {
+                console.log('Player left:', data);
+                connectedPlayers = data.players;
+                updatePlayerLobby(data.players);
+                updatePlayerCount(data.totalPlayers);
+                
+                // Disable start button if no players
+                if (data.totalPlayers === 0) {
+                    document.getElementById('startRaceBtn').disabled = true;
+                    document.getElementById('startRaceBtn').textContent = 'Waiting for players...';
+                    document.getElementById('minPlayersNotice').style.display = 'block';
+                }
+            });
+
+            // Map selection event
+            document.getElementById('mapSelect').addEventListener('change', (e) => {
+                socket.emit('selectMap', {
+                    roomCode: roomCode,
+                    mapId: e.target.value
+                });
+            });
+
+            // Game mode selection event
+            document.getElementById('gameModeSelect').addEventListener('change', (e) => {
+                socket.emit('selectGameMode', {
+                    roomCode: roomCode,
+                    gameMode: e.target.value
+                });
+            });
+
+            // Start race button
+            document.getElementById('startRaceBtn').addEventListener('click', () => {
+                if (connectedPlayers.length > 0) {
+                    startRace();
+                }
+            });
+
+            // Back button
+            document.getElementById('backBtn').addEventListener('click', () => {
+                if (confirm('Leave the game? This will close the room for all players.')) {
+                    socket.disconnect();
+                    window.location.href = '/';
+                }
+            });
+        }
+
+        function generateQRCode(url) {
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = ''; // Clear existing
+            
+            new QRCode(qrcodeContainer, {
+                text: url,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function updateRoomStatus(status, text) {
+            const statusDot = document.querySelector('.status-dot');
+            const statusText = document.querySelector('.status-text');
+            
+            statusDot.className = 'status-dot ' + status;
+            statusText.textContent = text;
+        }
+
+        function updatePlayerCount(count) {
+            document.getElementById('playerCount').textContent = 
+                `👥 Players Connected: ${count}/4`;
+        }
+
+        function updatePlayerLobby(players) {
+            // Reset all slots
+            for (let i = 1; i <= 4; i++) {
+                const slot = document.querySelector(`.player-slot[data-player="${i}"]`);
+                const nameEl = slot.querySelector('.player-name');
+                const statusEl = slot.querySelector('.player-status');
+                
+                // Find player for this slot
+                const player = players.find(p => p.playerNumber === i);
+                
+                if (player) {
+                    slot.classList.remove('empty');
+                    slot.classList.add('connected');
+                    nameEl.textContent = player.playerName;
+                    statusEl.textContent = player.isHost ? '👑 Host' : '✓ Connected';
+                } else {
+                    slot.classList.remove('connected');
+                    slot.classList.add('empty');
+                    nameEl.textContent = 'Waiting...';
+                    statusEl.textContent = 'Empty slot';
+                }
+            }
+        }
+
+        function startRace() {
+            // Show loading overlay
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            // Emit start game event
+            socket.emit('startGame', roomCode);
+            
+            // Wait for game to initialize, then redirect to actual game
+            setTimeout(() => {
+                // In future steps, this will load the Three.js game
+                alert('Game starting! (Three.js game will be implemented in future steps)');
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
