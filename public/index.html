@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beach Buggy Racing - Multiplayer</title>
+    <link rel="stylesheet" href="css/desktop.css">
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="welcome-content">
+            <!-- Logo/Title -->
+            <div class="game-logo">
+                <h1>🏎️ Beach Buggy Racing</h1>
+                <p class="subtitle">Multiplayer Web Edition</p>
+            </div>
+
+            <!-- Features List -->
+            <div class="features">
+                <div class="feature-item">
+                    <span class="feature-icon">📱</span>
+                    <span class="feature-text">Use phones as controllers</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">👥</span>
+                    <span class="feature-text">Up to 4 players</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">🏁</span>
+                    <span class="feature-text">Multiple race tracks</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">⚡</span>
+                    <span class="feature-text">Real-time multiplayer</span>
+                </div>
+            </div>
+
+            <!-- Start Game Button -->
+            <button id="startGameBtn" class="btn-primary">
+                Start Game
+            </button>
+
+            <!-- Instructions -->
+            <div class="instructions">
+                <p>Click "Start Game" to create a new room</p>
+                <p class="small-text">Players will scan QR code on their phones to join</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Best played in fullscreen • Chrome/Firefox/Safari recommended</p>
+        </div>
+    </div>
+
+    <script>
+        // Simple navigation to game page
+        document.getElementById('startGameBtn').addEventListener('click', () => {
+            // Add click animation
+            const btn = document.getElementById('startGameBtn');
+            btn.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                window.location.href = '/game';
+            }, 200);
+        });
+
+        // Enter key also starts game
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('startGameBtn').click();
+            }
+        });
+    </script>
+</body>
+</html>
