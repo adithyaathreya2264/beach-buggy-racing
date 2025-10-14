@@ -78,6 +78,29 @@ app.post('/api/generate-qr', async (req, res) => {
     }
 });
 
+// API endpoint to get room info (optional, for debugging)
+app.get('/api/room/:roomCode', (req, res) => {
+    const room = roomManager.getRoom(req.params.roomCode);
+    
+    if (!room) {
+        return res.status(404).json({ error: 'Room not found' });
+    }
+    
+    res.json({ success: true, room: room.getState() });
+});
+
+// API endpoint to get all rooms (optional, for debugging)
+app.get('/api/rooms', (req, res) => {
+    const rooms = roomManager.getAllRooms().map(room => ({
+        roomCode: room.roomCode,
+        playerCount: room.players.length,
+        gameStarted: room.gameStarted,
+        createdAt: room.createdAt
+    }));
+    
+    res.json({ success: true, rooms: rooms, count: rooms.size });
+});
+
 // ============================================
 // SOCKET.IO CONNECTION HANDLING
 // ============================================
@@ -215,7 +238,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Mobile controller sends input
+    // Mobile controller sends input (basic version)
     socket.on('controllerInput', (data) => {
         try {
             const { roomCode, input } = data;
@@ -238,6 +261,42 @@ io.on('connection', (socket) => {
 
         } catch (error) {
             console.error('[CONTROLLER INPUT ERROR]', error);
+        }
+    });
+
+    // Enhanced controller input with sequence numbers (Step 5)
+    socket.on('controllerInputSequenced', (data) => {
+        try {
+            const { roomCode, input, sequence } = data;
+            
+            const room = roomManager.getRoom(roomCode);
+            if (!room) return;
+
+            const player = room.getPlayerBySocketId(socket.id);
+            if (!player) return;
+
+            // Validate input
+            const validation = validateInput(input);
+            if (!validation.valid) {
+                console.warn(`[INPUT VALIDATION] Invalid input from Player ${player.playerNumber}:`, validation.errors);
+                return;
+            }
+
+            // Update player's input state with validated input
+            player.input = validation.sanitized;
+            player.lastInputSequence = sequence || 0;
+            player.lastInputTime = Date.now();
+
+            // Broadcast to desktop with sequence number for reconciliation
+            socket.to(room.hostSocketId).emit('playerInputSequenced', {
+                playerNumber: player.playerNumber,
+                input: validation.sanitized,
+                sequence: sequence || 0,
+                timestamp: Date.now()
+            });
+
+        } catch (error) {
+            console.error('[CONTROLLER INPUT SEQUENCED ERROR]', error);
         }
     });
 
@@ -326,6 +385,68 @@ io.on('connection', (socket) => {
     });
 
     // ==========================================
+    // LATENCY MONITORING (Step 5)
+    // ==========================================
+
+    // Ping/pong for latency measurement
+    socket.on('ping', (data, callback) => {
+        // Simply echo back immediately
+        if (callback) {
+            callback({
+                clientTime: data.clientTime,
+                serverTime: Date.now()
+            });
+        }
+    });
+
+    // ==========================================
+    // GAME STATE SYNCHRONIZATION (Step 5)
+    // ==========================================
+
+    // Desktop sends game state updates to all players
+    socket.on('gameStateUpdate', (data) => {
+        try {
+            const { roomCode, state } = data;
+            
+            const room = roomManager.getRoom(roomCode);
+            if (!room) return;
+
+            // Only host can send game state updates
+            if (socket.id !== room.hostSocketId) {
+                console.warn('[GAME STATE] Non-host attempted to send game state');
+                return;
+            }
+
+            // Broadcast to all players in room
+            io.to(roomCode).emit('gameState', {
+                state: state,
+                timestamp: Date.now()
+            });
+
+        } catch (error) {
+            console.error('[GAME STATE UPDATE ERROR]', error);
+        }
+    });
+
+    // Player acknowledges receiving game state
+    socket.on('stateAcknowledged', (data) => {
+        try {
+            const { roomCode, lastSequence } = data;
+            
+            const room = roomManager.getRoom(roomCode);
+            if (!room) return;
+
+            const player = room.getPlayerBySocketId(socket.id);
+            if (!player) return;
+
+            player.lastAcknowledgedState = lastSequence;
+
+        } catch (error) {
+            console.error('[STATE ACKNOWLEDGED ERROR]', error);
+        }
+    });
+
+    // ==========================================
     // DISCONNECTION HANDLING
     // ==========================================
 
@@ -377,8 +498,60 @@ io.on('connection', (socket) => {
 function getServerURL() {
     const port = process.env.PORT || 3000;
     // In production, replace with your actual domain
-    return `http://localhost:${port}`;
+    // For local network testing, use your local IP (e.g., 'http://192.168.1.100:3000')
+    return process.env.SERVER_URL || `http://localhost:${port}`;
 }
+
+/**
+ * Validate controller input
+ * Prevents cheating and ensures data integrity
+ */
+function validateInput(input) {
+    const errors = [];
+    
+    // Validate steering
+    if (typeof input.steering !== 'number') {
+        errors.push('Steering must be a number');
+    } else if (input.steering < -1 || input.steering > 1) {
+        errors.push('Steering out of range');
+    } else if (isNaN(input.steering)) {
+        errors.push('Steering is NaN');
+    }
+    
+    // Validate brake
+    if (typeof input.brake !== 'boolean') {
+        errors.push('Brake must be a boolean');
+    }
+    
+    // Validate timestamp
+    if (typeof input.timestamp !== 'number') {
+        errors.push('Timestamp must be a number');
+    } else if (input.timestamp < 0) {
+        errors.push('Timestamp cannot be negative');
+    }
+    
+    // Sanitize input (clamp values to valid ranges)
+    const sanitized = {
+        steering: Math.max(-1, Math.min(1, Number(input.steering) || 0)),
+        brake: Boolean(input.brake),
+        timestamp: Number(input.timestamp) || Date.now()
+    };
+    
+    return {
+        valid: errors.length === 0,
+        errors: errors,
+        sanitized: sanitized
+    };
+}
+
+// ============================================
+// PERIODIC CLEANUP
+// ============================================
+
+// Clean up inactive rooms every 30 minutes
+setInterval(() => {
+    roomManager.cleanupInactiveRooms(60); // Remove rooms older than 60 minutes with no players
+}, 30 * 60 * 1000);
 
 // ============================================
 // START SERVER
@@ -392,6 +565,11 @@ server.listen(PORT, () => {
     console.log(`🌐 Desktop: http://localhost:${PORT}`);
     console.log(`📱 Controller: http://localhost:${PORT}/controller`);
     console.log('=====================================');
+    console.log('');
+    console.log('For mobile testing on local network:');
+    console.log('1. Find your local IP address');
+    console.log('2. Use http://YOUR_IP:' + PORT + '/controller');
+    console.log('=====================================');
 });
 
 // Graceful shutdown
@@ -400,4 +578,21 @@ process.on('SIGTERM', () => {
     server.close(() => {
         console.log('HTTP server closed');
     });
+});
+
+process.on('SIGINT', () => {
+    console.log('\nSIGINT signal received: closing HTTP server');
+    server.close(() => {
+        console.log('HTTP server closed');
+        process.exit(0);
+    });
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
