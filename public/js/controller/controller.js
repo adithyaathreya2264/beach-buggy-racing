@@ -439,21 +439,86 @@ function setupMouseControls(steerLeft, steerRight, brakeBtn) {
 // INPUT SENDING
 // ============================================
 
-let inputInterval = null;
+// Replace the existing startSendingInputs() function in controller.js
+
+// ============================================
+// ENHANCED INPUT SENDING WITH BUFFERING
+// ============================================
+
+let inputBuffer = null;
+let latencyMonitor = null;
 
 function startSendingInputs() {
+    // Initialize input buffer
+    if (typeof InputBuffer !== 'undefined') {
+        inputBuffer = new InputBuffer(60);
+    }
+    
+    // Initialize latency monitor
+    if (typeof LatencyMonitor !== 'undefined') {
+        latencyMonitor = new LatencyMonitor();
+        latencyMonitor.start(socket, 2000);
+        
+        // Update UI with latency info
+        latencyMonitor.onUpdate((stats) => {
+            updateLatencyDisplay(stats);
+        });
+    }
+
     // Send inputs at 60Hz (every ~16ms)
     inputInterval = setInterval(() => {
         if (socket && roomCode) {
             inputState.timestamp = Date.now();
             
-            socket.emit('controllerInput', {
+            // Add to buffer and get sequenced input
+            let sequencedInput = inputState;
+            
+            if (inputBuffer) {
+                const buffered = inputBuffer.addInput(inputState);
+                sequencedInput = {
+                    ...inputState,
+                    sequence: buffered.sequence
+                };
+            }
+            
+            // Send to server
+            socket.emit('controllerInputSequenced', {
                 roomCode: roomCode,
-                input: inputState
+                input: inputState,
+                sequence: sequencedInput.sequence || 0
             });
         }
-    }, 16);
+    }, 16); // ~60Hz
 }
+
+function updateLatencyDisplay(stats) {
+    // Find or create latency display element
+    let latencyEl = document.getElementById('latencyDisplay');
+    
+    if (!latencyEl) {
+        latencyEl = document.createElement('div');
+        latencyEl.id = 'latencyDisplay';
+        latencyEl.style.cssText = `
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            z-index: 10000;
+        `;
+        document.body.appendChild(latencyEl);
+    }
+    
+    latencyEl.innerHTML = `
+        <div style="color: ${stats.quality.color}">
+            📡 ${stats.average}ms ${stats.quality.label}
+        </div>
+    `;
+}
+
 
 function stopSendingInputs() {
     if (inputInterval) {
