@@ -58,81 +58,83 @@
                 <div class="lobby-section">
                     <h2>Players</h2>
                     
-                    <!-- Player Slots -->
-                    <div id="playerSlots" class="player-slots">
-                        <!-- Player 1 -->
-                        <div class="player-slot empty" data-player="1">
-                            <div class="player-number">1</div>
-                            <div class="player-info">
-                                <div class="player-name">Waiting...</div>
-                                <div class="player-status">Empty slot</div>
-                            </div>
-                            <div class="player-indicator"></div>
-                        </div>
+                <!-- Player Slots -->
+    			<div id="playerSlots" class="player-slots">
+    				<!-- Player 1 -->
+    				<div class="player-slot empty" data-player="1">
+        				<div class="player-number">1</div>
+        				<div class="player-info">
+            				<div class="player-name">Waiting...</div>
+            				<div class="player-status">Empty slot</div>
+            				<!-- NEW: Add this line -->
+            				<div class="car-preview" style="display:none;"></div>
+        				</div>
+        				<div class="player-indicator"></div>
+    				</div>
 
-                        <!-- Player 2 -->
-                        <div class="player-slot empty" data-player="2">
-                            <div class="player-number">2</div>
-                            <div class="player-info">
-                                <div class="player-name">Waiting...</div>
-                                <div class="player-status">Empty slot</div>
-                            </div>
-                            <div class="player-indicator"></div>
-                        </div>
+    			<!-- Player 2 -->
+    			<div class="player-slot empty" data-player="2">
+        			<div class="player-number">2</div>
+        			<div class="player-info">
+            			<div class="player-name">Waiting...</div>
+            			<div class="player-status">Empty slot</div>
+            			<!-- NEW: Add this line -->
+            			<div class="car-preview" style="display:none;"></div>
+        			</div>
+        			<div class="player-indicator"></div>
+    			</div>
 
-                        <!-- Player 3 -->
-                        <div class="player-slot empty" data-player="3">
-                            <div class="player-number">3</div>
-                            <div class="player-info">
-                                <div class="player-name">Waiting...</div>
-                                <div class="player-status">Empty slot</div>
-                            </div>
-                            <div class="player-indicator"></div>
-                        </div>
+    			<!-- Player 3 -->
+    			<div class="player-slot empty" data-player="3">
+        			<div class="player-number">3</div>
+        			<div class="player-info">
+            			<div class="player-name">Waiting...</div>
+            			<div class="player-status">Empty slot</div>
+            			<!-- NEW: Add this line -->
+            			<div class="car-preview" style="display:none;"></div>
+        			</div>
+        			<div class="player-indicator"></div>
+    			</div>
 
-                        <!-- Player 4 -->
-                        <div class="player-slot empty" data-player="4">
-                            <div class="player-number">4</div>
-                            <div class="player-info">
-                                <div class="player-name">Waiting...</div>
-                                <div class="player-status">Empty slot</div>
-                            </div>
-                            <div class="player-indicator"></div>
-                        </div>
-                    </div>
+    			<!-- Player 4 -->
+    			<div class="player-slot empty" data-player="4">
+        			<div class="player-number">4</div>
+        			<div class="player-info">
+            			<div class="player-name">Waiting...</div>
+            			<div class="player-status">Empty slot</div>
+            			<!-- NEW: Add this line -->
+            			<div class="car-preview" style="display:none;"></div>
+        			</div>
+        			<div class="player-indicator"></div>
+    			</div>
+			</div>
 
-                    <!-- Game Controls (visible to Player 1 when ready) -->
-                    <div id="gameControls" class="game-controls" style="display: none;">
-                        <h3>Game Setup</h3>
-                        
-                        <!-- Map Selection (visible to Player 1 only) -->
-                        <div id="mapSelection" class="selection-section">
-                            <label>Select Track:</label>
-                            <select id="mapSelect" class="custom-select">
-                                <option value="beach">🏖️ Beach Paradise</option>
-                                <option value="desert">🏜️ Desert Storm</option>
-                                <option value="jungle">🌴 Jungle Rush</option>
-                                <option value="arctic">❄️ Arctic Blast</option>
-                                <option value="city">🏙️ City Circuit</option>
-                            </select>
-                        </div>
 
-                        <!-- Game Mode Selection -->
-                        <div id="gameModeSelection" class="selection-section">
-                            <label>Game Mode:</label>
-                            <select id="gameModeSelect" class="custom-select">
-                                <option value="race">🏁 Race (3 Laps)</option>
-                                <option value="timeTrial">⏱️ Time Trial</option>
-                                <option value="elimination">💥 Elimination</option>
-                                <option value="battle">⚔️ Battle Arena</option>
-                            </select>
-                        </div>
+            <div id="gameControls" class="game-controls" style="display: none;">
+    			<h3>Game Setup</h3>
+    
+    			<!-- Map Selection Display -->
+    			<div id="mapSelection" class="selection-section">
+    			    <label>Selected Track:</label>
+        			<div id="currentMapDisplay" class="current-selection">
+            			<span id="displayMapName">🏖️ Beach Paradise</span>
+        			</div>
+    			</div>
 
-                        <!-- Start Race Button -->
-                        <button id="startRaceBtn" class="btn-primary btn-large" disabled>
-                            Waiting for players...
-                        </button>
-                    </div>
+    			<!-- Game Mode Selection Display -->
+    			<div id="gameModeSelection" class="selection-section">
+        			<label>Game Mode:</label>
+        			<div id="currentModeDisplay" class="current-selection">
+            			<span id="displayModeName">🏁 Race (3 Laps)</span>
+        			</div>
+    			</div>
+
+    			<!-- NEW BUTTON: Proceed to Car Selection -->
+    			<button id="proceedToCarSelection" class="btn-primary btn-large" disabled>
+        			Select Cars
+    			</button>
+			</div>
+
 
                     <!-- Minimum Players Notice -->
                     <div id="minPlayersNotice" class="notice-box">
@@ -143,11 +145,20 @@
             </div>
         </div>
 
-        <!-- Back Button -->
+                <!-- Back Button -->
         <button id="backBtn" class="btn-secondary back-btn">
             ← Back to Menu
         </button>
     </div>
+
+    <!-- NEW SECTION: Car Selection Screen -->
+    <div id="carSelectionScreen" class="car-selection-screen" style="display: none;">
+        <iframe src="carSelection.html" style="width: 100%; height: 100vh; border: none;"></iframe>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
@@ -162,8 +173,7 @@
     <script src="js/shared/latencyMonitor.js"></script>
 	<script src="js/shared/constants.js"></script>
 	<script src="js/shared/connection.js"></script>
-    <script src="js/shared/constants.js"></script>
-    <script src="js/shared/connection.js"></script>
+    <script src="js/game/selectionManager.js"></script>
     
     <script>
         // Game lobby management
@@ -171,6 +181,7 @@
         let roomCode = null;
         let isHost = false;
         let connectedPlayers = [];
+		let selectionManager = null;
 
         // Initialize connection when page loads
         window.addEventListener('DOMContentLoaded', () => {
@@ -187,33 +198,36 @@
 
             // Connection successful
             socket.on('connect', () => {
-                console.log('Connected to server');
-                updateRoomStatus('connected', 'Connected');
-                
-                // Create a new room
-                socket.emit('createRoom', (response) => {
-                    if (response.success) {
-                        roomCode = response.roomCode;
-                        isHost = true;
-                        
-                        console.log('Room created:', roomCode);
-                        
-                        // Display room code
-                        document.getElementById('roomCode').textContent = roomCode;
-                        document.getElementById('controllerUrl').textContent = 
-                            `${window.location.origin}/controller`;
-                        
-                        // Generate QR code
-                        generateQRCode(response.controllerUrl);
-                        
-                        // Show game controls for host
-                        document.getElementById('gameControls').style.display = 'block';
-                        
-                    } else {
-                        alert('Failed to create room: ' + response.error);
-                    }
-                });
-            });
+    console.log('Connected to server');
+    updateRoomStatus('connected', 'Connected');
+    
+    // Create a new room
+    socket.emit('createRoom', (response) => {
+        if (response.success) {
+            roomCode = response.roomCode;
+            isHost = true;
+            
+            console.log('Room created:', roomCode);
+            
+            // Display room code
+            document.getElementById('roomCode').textContent = roomCode;
+            document.getElementById('controllerUrl').textContent = 
+                `${window.location.origin}/controller`;
+            
+            // Generate QR code
+            generateQRCode(response.controllerUrl);
+            
+            // Show game controls for host
+            document.getElementById('gameControls').style.display = 'block';
+            
+            // NEW: Initialize selection manager
+            if (typeof SelectionManager !== 'undefined') {
+                selectionManager = new SelectionManager(socket, roomCode);
+            }
+        }
+    });
+});
+
 
             // Connection error
             socket.on('connect_error', (error) => {
@@ -233,52 +247,38 @@
                 connectedPlayers = data.players;
                 updatePlayerLobby(data.players);
                 updatePlayerCount(data.totalPlayers);
+				updateProceedButton();
                 
-                // Enable start button if at least 1 player
+                // Hide minimum players notice if we have players
                 if (data.totalPlayers >= 1) {
-                    document.getElementById('startRaceBtn').disabled = false;
-                    document.getElementById('startRaceBtn').textContent = 'Start Race';
-                    document.getElementById('minPlayersNotice').style.display = 'none';
-                }
+        			document.getElementById('minPlayersNotice').style.display = 'none';
+    			}
             });
 
             // Player left event
             socket.on('playerLeft', (data) => {
-                console.log('Player left:', data);
-                connectedPlayers = data.players;
-                updatePlayerLobby(data.players);
-                updatePlayerCount(data.totalPlayers);
-                
-                // Disable start button if no players
-                if (data.totalPlayers === 0) {
-                    document.getElementById('startRaceBtn').disabled = true;
-                    document.getElementById('startRaceBtn').textContent = 'Waiting for players...';
-                    document.getElementById('minPlayersNotice').style.display = 'block';
-                }
-            });
+    			console.log('Player left:', data);
+    			connectedPlayers = data.players;
+    			updatePlayerLobby(data.players);
+    			updatePlayerCount(data.totalPlayers);
+    
+    			// NEW: Update proceed button
+    			updateProceedButton();
+    
+    			// Show minimum players notice if no players
+    			if (data.totalPlayers === 0) {
+        			document.getElementById('minPlayersNotice').style.display = 'block';
+    			}
+			});
 
-            // Map selection event
-            document.getElementById('mapSelect').addEventListener('change', (e) => {
-                socket.emit('selectMap', {
-                    roomCode: roomCode,
-                    mapId: e.target.value
-                });
-            });
 
-            // Game mode selection event
-            document.getElementById('gameModeSelect').addEventListener('change', (e) => {
-                socket.emit('selectGameMode', {
-                    roomCode: roomCode,
-                    gameMode: e.target.value
-                });
-            });
+            
 
-            // Start race button
-            document.getElementById('startRaceBtn').addEventListener('click', () => {
-                if (connectedPlayers.length > 0) {
-                    startRace();
-                }
-            });
+            // NEW: Proceed to car selection button
+			document.getElementById('proceedToCarSelection').addEventListener('click', () => {
+    			proceedToCarSelection();
+			});
+
 
             // Back button
             document.getElementById('backBtn').addEventListener('click', () => {
@@ -340,6 +340,37 @@
             }
         }
 
+                // NEW FUNCTION: Update proceed to car selection button
+        function updateProceedButton() {
+            const proceedBtn = document.getElementById('proceedToCarSelection');
+            if (connectedPlayers.length >= 1) {
+                proceedBtn.disabled = false;
+                proceedBtn.textContent = `Select Cars (${connectedPlayers.length} Players)`;
+            } else {
+                proceedBtn.disabled = true;
+                proceedBtn.textContent = 'Waiting for players...';
+            }
+        }
+
+        // NEW FUNCTION: Proceed to car selection screen
+        function proceedToCarSelection() {
+            // Hide lobby UI
+            document.querySelector('.game-content').style.display = 'none';
+            document.querySelector('.game-header').style.display = 'none';
+            document.getElementById('backBtn').style.display = 'none';
+            
+            // Show car selection
+            document.getElementById('carSelectionScreen').style.display = 'block';
+            
+            // Start selection phase
+            if (selectionManager) {
+                selectionManager.startSelection(connectedPlayers.length);
+            }
+            
+            // Notify all players to start car selection
+            socket.emit('startCarSelection', { roomCode: roomCode });
+        }
+
         function startRace() {
             // Show loading overlay
             document.getElementById('loadingOverlay').style.display = 'flex';
@@ -355,5 +386,6 @@
             }, 2000);
         }
     </script>
+
 </body>
 </html>
