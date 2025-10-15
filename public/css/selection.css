@@ -1,0 +1,361 @@
+/* ============================================
+   CAR SELECTION STYLES
+   ============================================ */
+
+.selection-page {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+.selection-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+/* ============================================
+   SELECTION HEADER
+   ============================================ */
+
+.selection-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+}
+
+.selection-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #ff6b35, #ffd93d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.selection-info {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+}
+
+.info-label {
+    color: #b8b8b8;
+}
+
+.info-item span:last-child {
+    color: #ffd93d;
+    font-weight: bold;
+}
+
+/* ============================================
+   SELECTION INSTRUCTION
+   ============================================ */
+
+.selection-instruction {
+    text-align: center;
+    margin: 30px 0;
+    padding: 25px;
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(78, 205, 196, 0.3);
+}
+
+.selection-instruction h2 {
+    font-size: 2rem;
+    color: white;
+    margin: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* ============================================
+   CAR GRID
+   ============================================ */
+
+.car-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.car-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.car-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ff6b35, #ffd93d);
+    border-radius: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.car-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255, 107, 53, 0.5);
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+}
+
+.car-card:hover::before {
+    opacity: 1;
+}
+
+.car-card.selected {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.car-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: #4caf50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.car-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ============================================
+   CAR IMAGE
+   ============================================ */
+
+.car-image-container {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.car-placeholder {
+    font-size: 5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.car-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* ============================================
+   CAR INFO
+   ============================================ */
+
+.car-info {
+    text-align: center;
+}
+
+.car-name {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #ffd93d;
+}
+
+.car-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stat-bar {
+    display: grid;
+    grid-template-columns: 80px 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.stat-label {
+    color: #b8b8b8;
+    text-align: left;
+}
+
+.stat-fill {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stat-value {
+    height: 100%;
+    background: linear-gradient(90deg, #4ecdc4, #44a08d);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.stat-number {
+    color: #4ecdc4;
+    font-weight: bold;
+    text-align: right;
+}
+
+/* ============================================
+   PLAYER SELECTIONS DISPLAY
+   ============================================ */
+
+.player-selections {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+}
+
+.player-selections h3 {
+    color: #ffd93d;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.selections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.selection-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 2px solid transparent;
+}
+
+.selection-item.waiting {
+    opacity: 0.5;
+    border-color: #666;
+}
+
+.selection-item.selected {
+    border-color: #4caf50;
+}
+
+.player-number-badge {
+    width: 50px;
+    height: 50px;
+    background: #ff6b35;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.selection-item.selected .player-number-badge {
+    background: #4caf50;
+}
+
+.selection-details {
+    flex: 1;
+}
+
+.selection-player-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.selection-car-name {
+    color: #b8b8b8;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   FINAL ACTIONS
+   ============================================ */
+
+.final-actions {
+    text-align: center;
+}
+
+.final-actions .btn-large {
+    min-width: 300px;
+    font-size: 1.8rem;
+    padding: 25px 60px;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .car-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .selection-header h1 {
+        font-size: 2rem;
+    }
+    
+    .selection-instruction h2 {
+        font-size: 1.5rem;
+    }
+    
+    .selections-grid {
+        grid-template-columns: 1fr;
+    }
+}
