@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Selection - Beach Buggy Racing</title>
+    <link rel="stylesheet" href="css/desktop.css">
+    <link rel="stylesheet" href="css/selection.css">
+</head>
+<body class="selection-page">
+    <div class="selection-container">
+        <!-- Header -->
+        <div class="selection-header">
+            <h1>🏎️ Select Your Vehicles</h1>
+            <div class="selection-info">
+                <div class="info-item">
+                    <span class="info-label">Map:</span>
+                    <span id="selectedMapName">Beach Paradise</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Mode:</span>
+                    <span id="selectedGameMode">Race</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Player Instruction -->
+        <div class="selection-instruction">
+            <h2 id="selectionInstruction">Player 1, select your car!</h2>
+        </div>
+
+        <!-- Car Grid -->
+        <div class="car-grid">
+            <!-- Car Option 1: Speedster -->
+            <div class="car-card" data-car="speedster">
+                <div class="car-image-container">
+                    <div class="car-placeholder">🏎️</div>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Speedster</h3>
+                    <div class="car-stats">
+                        <div class="stat-bar">
+                            <span class="stat-label">Speed</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 95%"></div>
+                            </div>
+                            <span class="stat-number">95</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Handling</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 70%"></div>
+                            </div>
+                            <span class="stat-number">70</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Accel</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 80%"></div>
+                            </div>
+                            <span class="stat-number">80</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Option 2: Crusher -->
+            <div class="car-card" data-car="crusher">
+                <div class="car-image-container">
+                    <div class="car-placeholder">🚙</div>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Crusher</h3>
+                    <div class="car-stats">
+                        <div class="stat-bar">
+                            <span class="stat-label">Speed</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 70%"></div>
+                            </div>
+                            <span class="stat-number">70</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Handling</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 60%"></div>
+                            </div>
+                            <span class="stat-number">60</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Accel</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 85%"></div>
+                            </div>
+                            <span class="stat-number">85</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Option 3: Drifter -->
+            <div class="car-card" data-car="drifter">
+                <div class="car-image-container">
+                    <div class="car-placeholder">🏁</div>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Drifter</h3>
+                    <div class="car-stats">
+                        <div class="stat-bar">
+                            <span class="stat-label">Speed</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 80%"></div>
+                            </div>
+                            <span class="stat-number">80</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Handling</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 95%"></div>
+                            </div>
+                            <span class="stat-number">95</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Accel</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 75%"></div>
+                            </div>
+                            <span class="stat-number">75</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Option 4: Balanced -->
+            <div class="car-card" data-car="balanced">
+                <div class="car-image-container">
+                    <div class="car-placeholder">🚗</div>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">All-Rounder</h3>
+                    <div class="car-stats">
+                        <div class="stat-bar">
+                            <span class="stat-label">Speed</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 80%"></div>
+                            </div>
+                            <span class="stat-number">80</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Handling</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 80%"></div>
+                            </div>
+                            <span class="stat-number">80</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Accel</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 80%"></div>
+                            </div>
+                            <span class="stat-number">80</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Option 5: Rocket -->
+            <div class="car-card" data-car="rocket">
+                <div class="car-image-container">
+                    <div class="car-placeholder">🚀</div>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Rocket</h3>
+                    <div class="car-stats">
+                        <div class="stat-bar">
+                            <span class="stat-label">Speed</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 100%"></div>
+                            </div>
+                            <span class="stat-number">100</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Handling</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 65%"></div>
+                            </div>
+                            <span class="stat-number">65</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Accel</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 90%"></div>
+                            </div>
+                            <span class="stat-number">90</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Option 6: Tank -->
+            <div class="car-card" data-car="tank">
+                <div class="car-image-container">
+                    <div class="car-placeholder">🚜</div>
+                </div>
+                <div class="car-info">
+                    <h3 class="car-name">Tank</h3>
+                    <div class="car-stats">
+                        <div class="stat-bar">
+                            <span class="stat-label">Speed</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 65%"></div>
+                            </div>
+                            <span class="stat-number">65</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Handling</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 70%"></div>
+                            </div>
+                            <span class="stat-number">70</span>
+                        </div>
+                        <div class="stat-bar">
+                            <span class="stat-label">Accel</span>
+                            <div class="stat-fill">
+                                <div class="stat-value" style="width: 70%"></div>
+                            </div>
+                            <span class="stat-number">70</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player Selections Display -->
+        <div class="player-selections">
+            <h3>Selected Vehicles:</h3>
+            <div class="selections-grid" id="selectionsGrid">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Start Button (visible when all selected) -->
+        <div class="final-actions">
+            <button id="finalStartBtn" class="btn-primary btn-large" disabled>
+                Waiting for selections...
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+    <script src="js/shared/constants.js"></script>
+    <script src="js/game/selectionManager.js"></script>
+    <script>
+        // This will be integrated into the main game flow
+        // For now, just log that page loaded
+        console.log('Car selection page loaded');
+    </script>
+</body>
+</html>
